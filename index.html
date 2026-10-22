@@ -1,5 +1,5 @@
 ‎<!DOCTYPE html>
-‎<html lang="en">
+<html lang="en">
 ‎<head>
 ‎    <meta charset="UTF-8">
 ‎    <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,16 +19,30 @@
 ‎        <input type="text" id="user-input" placeholder="Type your message...">
 ‎        <button onclick="sendMessage()">Send</button>
 ‎    </div>
-‎
 ‎    <script>
-‎        function sendMessage() {
+‎        async function sendMessage() {
 ‎            let input = document.getElementById("user-input").value;
 ‎            if (input.trim() !== "") {
 ‎                document.getElementById("chat-box").innerHTML += "<div><b>You:</b> " + input + "</div>";
 ‎                document.getElementById("user-input").value = "";
+‎
+‎                try {
+‎                    let response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AQ.Ab8RN6J1-N_gpckvDPVBOKnPt42dF49uheEOHfmG96Ec3NpQQw", {
+‎                        method: "POST",
+‎                        headers: { "Content-Type": "application/json" },
+‎                        body: JSON.stringify({ contents: [{ parts: [{ text: input }] }] })
+‎                    });
+‎                    let data = await response.json();
+‎                    let reply = data.candidates[0].content.parts[0].text;
+‎                    document.getElementById("chat-box").innerHTML += "<div><b>AI:</b> " + reply + "</div>";
+‎                } catch (error) {
+‎                    console.error("Error:", error);
+‎                    document.getElementById("chat-box").innerHTML += "<div><b>System:</b> Error connecting to AI.</div>";
+‎                }
 ‎            }
 ‎        }
 ‎    </script>
 ‎</body>
 ‎</html>
+‎
 ‎
